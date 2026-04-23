@@ -1,10 +1,53 @@
 {
   "name": "noise-handshake",
-  "version": "4.2.0",
-  "description": "Noise protocol handshake",
+  "version": "4.3.0",
+  "description": "Noise protocol handshake (classical + post-quantum)",
   "main": "noise.js",
+  "exports": {
+    ".": {
+      "require": "./noise.js",
+      "default": "./noise.js"
+    },
+    "./cipher": {
+      "require": "./cipher.js",
+      "default": "./cipher.js"
+    },
+    "./dh": {
+      "require": "./dh.js",
+      "default": "./dh.js"
+    },
+    "./hkdf": {
+      "require": "./hkdf.js",
+      "default": "./hkdf.js"
+    },
+    "./hmac": {
+      "require": "./hmac.js",
+      "default": "./hmac.js"
+    },
+    "./symmetric-state": {
+      "require": "./symmetric-state.js",
+      "default": "./symmetric-state.js"
+    },
+    "./pq": {
+      "import": "./pq.mjs",
+      "default": "./pq.mjs"
+    },
+    "./kem-mlkem512": {
+      "import": "./kem-mlkem512.mjs",
+      "default": "./kem-mlkem512.mjs"
+    },
+    "./kem-mlkem768": {
+      "import": "./kem-mlkem768.mjs",
+      "default": "./kem-mlkem768.mjs"
+    },
+    "./kem-mlkem1024": {
+      "import": "./kem-mlkem1024.mjs",
+      "default": "./kem-mlkem1024.mjs"
+    }
+  },
   "files": [
-    "*.js"
+    "*.js",
+    "*.mjs"
   ],
   "scripts": {
     "test": "standard && brittle test/*.js"
@@ -17,6 +60,7 @@
   },
   "dependencies": {
     "b4a": "^1.1.0",
+    "clatterjs": "file:../clatterjs",
     "nanoassert": "^2.0.0",
     "sodium-universal": "^5.0.0"
   },
