@@ -1,7 +1,7 @@
 {
-  "name": "noise-handshake",
+  "name": "@lukeburns/noise-handshake",
   "version": "4.3.0",
-  "description": "Noise protocol handshake (classical + post-quantum)",
+  "description": "Noise protocol with post-quantum extensions",
   "main": "noise.js",
   "exports": {
     ".": {
@@ -59,8 +59,8 @@
     "url": "git+https://github.com/holepunchto/noise-handshake.git"
   },
   "dependencies": {
+    "@lukeburns/clatterjs": "^1.0.0",
     "b4a": "^1.1.0",
-    "clatterjs": "file:../clatterjs",
     "nanoassert": "^2.0.0",
     "sodium-universal": "^5.0.0"
   },

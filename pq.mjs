@@ -11,7 +11,7 @@ import {
   sha512H,
   blake2bH,
   blake2sH
-} from 'clatterjs'
+} from '@lukeburns/clatterjs'
 
 const DEFAULT_KEM = MLKEM512
 const DEFAULT_CIPHER = chachaPoly

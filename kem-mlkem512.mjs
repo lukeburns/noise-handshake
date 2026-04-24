@@ -1,4 +1,4 @@
-import { MLKEM512 } from 'clatterjs'
+import { MLKEM512 } from '@lukeburns/clatterjs'
 
 export const name = MLKEM512.name
 export const kem = MLKEM512.kem
