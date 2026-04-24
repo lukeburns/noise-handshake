@@ -52,8 +52,14 @@
   "scripts": {
     "test": "standard && brittle test/*.js"
   },
-  "author": "Holepunch",
+  "author": "Luke Burns",
+  "contributors": [
+    "Holepunch"
+  ],
   "license": "Apache-2.0",
+  "publishConfig": {
+    "access": "restricted"
+  },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/holepunchto/noise-handshake.git"

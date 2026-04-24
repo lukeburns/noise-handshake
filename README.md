@@ -4,12 +4,12 @@ Noise protocol handshakes with optional post-quantum (ML-KEM) extensions.
 
 ## Post-Quantum handshakes
 
-`noise-handshake` can drive [PQNoise](https://doi.org/10.1145/3548606.3560577) handshakes that replace DH with an [ML-KEM](https://csrc.nist.gov/pubs/fips/203/final) key-encapsulation mechanism. The PQ entry point is published under the ESM subpath `noise-handshake/pq`, delegates to [`clatterjs`](https://www.npmjs.com/package/clatterjs) under the hood, and mirrors the classical `NoiseState` API (`initialise` / `send` / `recv` / `rx` / `tx` / `hash` / `complete`).
+`@lukeburns/noise-handshake` can drive [PQNoise](https://doi.org/10.1145/3548606.3560577) handshakes that replace DH with an [ML-KEM](https://csrc.nist.gov/pubs/fips/203/final) key-encapsulation mechanism. The PQ entry point is published under the ESM subpath `@lukeburns/noise-handshake/pq`, delegates to [`@lukeburns/clatterjs`](https://www.npmjs.com/package/@lukeburns/clatterjs) under the hood, and mirrors the classical `NoiseState` API (`initialise` / `send` / `recv` / `rx` / `tx` / `hash` / `complete`).
 
 ```js
-import { PqNoise } from 'noise-handshake/pq'
-import kem from 'noise-handshake/kem-mlkem512'
-import Cipher from 'noise-handshake/cipher'
+import { PqNoise } from '@lukeburns/noise-handshake/pq'
+import kem from '@lukeburns/noise-handshake/kem-mlkem512'
+import Cipher from '@lukeburns/noise-handshake/cipher'
 
 const initiator = new PqNoise('pqIK', true, null, { kem })
 const responder = new PqNoise('pqIK', false, null, { kem })
@@ -36,9 +36,9 @@ Same shape as the classical constructor, with two differences:
 
 `opts` may be used to pass in the following:
 
-- `kem`: a KEM module (defaults to `MLKEM512`). Re-usable modules are shipped as `noise-handshake/kem-mlkem512`, `noise-handshake/kem-mlkem768` and `noise-handshake/kem-mlkem1024`.
+- `kem`: a KEM module (defaults to `MLKEM512`). Re-usable modules are shipped as `@lukeburns/noise-handshake/kem-mlkem512`, `@lukeburns/noise-handshake/kem-mlkem768` and `@lukeburns/noise-handshake/kem-mlkem1024`.
 - `ekem`, `skem`: override the KEM for ephemeral and static operations independently (mirrors clatter's `EKEM+SKEM` naming). Falls back to `kem` when unset.
-- `cipher`, `hash`: AEAD and hash specs (defaults match the classical noise-handshake: ChaChaPoly + BLAKE2b). Use the re-exports from `noise-handshake/pq` (`chachaPoly`, `aesGcm`, `sha256H`, `sha512H`, `blake2bH`, `blake2sH`).
+- `cipher`, `hash`: AEAD and hash specs (defaults match the classical noise-handshake: ChaChaPoly + BLAKE2b). Use the re-exports from `@lukeburns/noise-handshake/pq` (`chachaPoly`, `aesGcm`, `sha256H`, `sha512H`, `blake2bH`, `blake2sH`).
 - `psk`: single 32-byte PSK for a `pskN` pattern. Shorthand for a one-element `psks` queue.
 - `psks`: array of 32-byte PSK buffers pushed in order for multi-PSK patterns.
 - `rng`: custom `(n: number) => Uint8Array` RNG (defaults to `crypto.getRandomValues`).
@@ -63,18 +63,18 @@ Call `peer.getProtocolName()` to read the fully-qualified name.
 
 ### Interop with the classical `Cipher`
 
-After the handshake completes, `peer.rx` and `peer.tx` are 32-byte raw AEAD keys — the same shape the classical API exposes — so the existing `noise-handshake/cipher` class can be used verbatim for transport encryption under the PQ-derived keys.
+After the handshake completes, `peer.rx` and `peer.tx` are 32-byte raw AEAD keys — the same shape the classical API exposes — so the existing `@lukeburns/noise-handshake/cipher` class can be used verbatim for transport encryption under the PQ-derived keys.
 
 ### Notes
 
-- The PQ entry point is ESM only. CommonJS consumers can reach it via dynamic `import`: `const { PqNoise } = await import('noise-handshake/pq')`.
-- The classical `require('noise-handshake')` entry is unchanged; the PQ feature is additive.
+- The PQ entry point is ESM only. CommonJS consumers can reach it via dynamic `import`: `const { PqNoise } = await import('@lukeburns/noise-handshake/pq')`.
+- The classical `require('@lukeburns/noise-handshake')` entry is unchanged; the PQ feature is additive.
 
 ## Classical handshakes
 
 ```js
-const Noise = require('noise-handshake')
-const Cipher = require('noise-handshake/cipher')
+const Noise = require('@lukeburns/noise-handshake')
+const Cipher = require('@lukeburns/noise-handshake/cipher')
 const initiator = new Noise('IK', true)
 const responder = new Noise('IK', false)
 
