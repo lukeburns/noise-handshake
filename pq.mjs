@@ -10,12 +10,14 @@ import {
   sha256H,
   sha512H,
   blake2bH,
-  blake2sH
+  blake2sH,
+  HYBRID_DUAL_LAYER
 } from '@lukeburns/clatterjs'
 
 const DEFAULT_KEM = MLKEM512
 const DEFAULT_CIPHER = chachaPoly
 const DEFAULT_HASH = blake2bH
+const BOUND_OUTER_DOMAIN = HYBRID_DUAL_LAYER
 
 function defaultRng (n) {
   const b = new Uint8Array(n)
@@ -54,6 +56,7 @@ export class PqNoise {
     this._cipher = opts.cipher || DEFAULT_CIPHER
     this._hash = opts.hash || DEFAULT_HASH
     this._rng = opts.rng || defaultRng
+    this._outerHandshakeHash = normalizeBuf(opts.outerHandshakeHash)
 
     this.pattern = pattern
     this._pattern = resolvePattern(pattern)
@@ -108,6 +111,10 @@ export class PqNoise {
     })
 
     for (const p of this._psks) this._hs.pushPsk(p)
+    if (this._outerHandshakeHash) {
+      this._hs.mixHash(BOUND_OUTER_DOMAIN)
+      this._hs.mixKeyAndHash(this._outerHandshakeHash)
+    }
 
     if (rsN) this.rs = Buffer.from(rsN)
   }
@@ -163,6 +170,12 @@ export class PqNoise {
   }
 }
 
+export class BoundPqNoise extends PqNoise {
+  constructor (pattern, initiator, staticKeypair = null, outerHandshakeHash, opts = {}) {
+    super(pattern, initiator, staticKeypair, { ...opts, outerHandshakeHash })
+  }
+}
+
 export {
   pqHandshakePatterns,
   MLKEM512,
@@ -173,7 +186,8 @@ export {
   sha256H,
   sha512H,
   blake2bH,
-  blake2sH
+  blake2sH,
+  BOUND_OUTER_DOMAIN
 }
 
 export default PqNoise

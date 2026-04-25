@@ -26,6 +26,22 @@ async function makePair (name, opts = {}) {
   return { initiator, responder }
 }
 
+async function makeBoundPair (name, outerHandshakeHash, opts = {}) {
+  const { BoundPqNoise } = await import('../pq.mjs')
+  const initiator = new BoundPqNoise(name, true, null, outerHandshakeHash, opts)
+  const responder = new BoundPqNoise(name, false, null, outerHandshakeHash, opts)
+
+  const prologue = Buffer.alloc(0)
+
+  if (NEEDS_RESPONDER_S.has(name)) initiator.initialise(prologue, responder.s.publicKey)
+  else initiator.initialise(prologue)
+
+  if (NEEDS_INITIATOR_S.has(name)) responder.initialise(prologue, initiator.s.publicKey)
+  else responder.initialise(prologue)
+
+  return { initiator, responder }
+}
+
 function completeHandshake (initiator, responder) {
   let safety = 0
   while (!(initiator.complete && responder.complete)) {
@@ -166,4 +182,36 @@ test('pq: split ekem/skem (MLKEM512 ephemeral + MLKEM768 static)', async t => {
 
   t.alike(initiator.rx, responder.tx)
   t.is(initiator.getProtocolName(), 'Noise_pqXX_MLKEM512+MLKEM768_ChaChaPoly_BLAKE2b')
+})
+
+test('bound pq: outer handshake hash is mixed into inner keys', async t => {
+  const outerHandshakeHash = Buffer.alloc(32, 9)
+  const { initiator, responder } = await makeBoundPair('pqXX', outerHandshakeHash)
+
+  completeHandshake(initiator, responder)
+
+  t.alike(initiator.tx, responder.rx)
+  t.alike(initiator.rx, responder.tx)
+  t.alike(initiator.hash, responder.hash)
+})
+
+test('bound pq: mismatched outer handshake hash fails', async t => {
+  t.plan(1)
+  const { BoundPqNoise } = await import('../pq.mjs')
+
+  const initiator = new BoundPqNoise('pqXX', true, null, Buffer.alloc(32, 1))
+  const responder = new BoundPqNoise('pqXX', false, null, Buffer.alloc(32, 2))
+
+  initiator.initialise(Buffer.alloc(0))
+  responder.initialise(Buffer.alloc(0))
+
+  try {
+    const m1 = initiator.send()
+    responder.recv(m1)
+    const reply = responder.send()
+    initiator.recv(reply)
+    t.fail('expected outer binding mismatch to fail')
+  } catch (err) {
+    t.pass(`outer binding mismatch rejected: ${err.message}`)
+  }
 })
